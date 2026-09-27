@@ -7,6 +7,19 @@ A Akil Ahamed - E0406341
 
 ## Q2. Experiment results and original output
 
+Running ecmp
+
+```shell
+cd /app/astra-sim
+SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r ecmp
+```
+
+Running placeholder
+
+```shell
+cd /app/astra-sim
+SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r placeholder
+```
 
 Workload	Placeholder LB completion time (ms)	Your ECMP LB completion time (ms)
 32-host, eight-ring AllReduce; 64 MB per host		
@@ -26,7 +39,7 @@ We have added optional log that can be activated at run time. This log prints th
 
 ```shell
 NS_LOG="ECMPLoadBalancing=level_debug" \
-./build_scripts/astra_ns3/microbenchmarks/ecmp.sh -r
+./build_scripts/astra_ns3/microbenchmarks/run.sh -r ecmp
 ```
 
 The following are the logs:
