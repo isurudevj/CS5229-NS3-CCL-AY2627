@@ -1,8 +1,9 @@
 ## Q1. Group information
 
-Group 9
+**Group 9**
 
 Isuru Anuranga Wijesinghe - E1373624
+
 A Akil Ahamed - E0406341
 
 ## Q2. Experiment results and original output
@@ -12,19 +13,21 @@ Running ecmp
 ```shell
 cd /app/astra-sim
 SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r ecmp
+
+tail -f /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/qlen.txt
+tail -f /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/fct.txt
+
 ```
-/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/qlen.txt
-/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/fct.txt
 
 Running placeholder
 
 ```shell
 cd /app/astra-sim
 SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r placeholder
-```
 
-/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_placeholder_1/qlen.txt
-/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_placeholder_1/fct.txt
+tail -f /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_placeholder_1/qlen.txt
+tail -f /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_placeholder_1/fct.txt
+```
 
 
 | Workload | Placeholder LB completion time (ms) | Your ECMP LB completion time (ms) |
@@ -92,6 +95,7 @@ NS_LOG="ECMPLoadBalancing=level_debug" \
 
 The following are the logs:
 
+```shell
 ECMP_HASH switch=32 observation=3 sip=184552449 dip=184550401 sport=100 dport=10000 protocol=252 hash=604606148 pathIndex=0 pathCount=1 outDev=5
 ECMP_HASH switch=38 observation=3 sip=184557057 dip=184555009 sport=100 dport=10000 protocol=252 hash=920603074 pathIndex=0 pathCount=1 outDev=3
 ECMP_HASH switch=33 observation=3 sip=184555009 dip=184552961 sport=100 dport=10000 protocol=252 hash=2118411912 pathIndex=0 pathCount=1 outDev=7
@@ -100,9 +104,11 @@ ECMP_HASH switch=32 observation=3 sip=184551681 dip=184549633 sport=100 dport=10
 ECMP_HASH switch=33 observation=3 sip=184555265 dip=184553217 sport=100 dport=10000 protocol=252 hash=1163780685 pathIndex=0 pathCount=1 outDev=8
 ECMP_HASH switch=34 observation=3 sip=184557057 dip=184555009 sport=100 dport=10000 protocol=252 hash=920603074 pathIndex=0 pathCount=1 outDev=7
 
+```
+
 From the logs, it can be confirmed that the packets sharing the same source IP, destination IP, ports and protocol always produced the same hash value. For example, both switches 38 and 34 computed hash=920603074 for the same flow. Also, it can be seen that that flows with different 5-tuples produced distinct hashes, mapping to different output devices when multiple paths were available.
 
-Q5. What will you investigate next?
+## Q5. What will you investigate next?
 
 We observed queue buildup at several switches even with ECMP enabled. Flow completion times are also running 2-3 times above the ideal baseline.
 
