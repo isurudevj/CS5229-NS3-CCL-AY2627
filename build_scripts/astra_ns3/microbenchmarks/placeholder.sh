@@ -15,13 +15,24 @@ MEMORY="${SCRIPT_DIR:?}"/../../inputs/remote_memory/analytical/no_memory_expansi
 # single (unused) setting below.
 
 # The workload for this test.
-# Run only the 64 MB single-pass workload for a quick placeholder experiment.
+# The four uncommented sizes below (32/64/128/256 MB single pass) are the REQUIRED sweep -- you
+# must report results for all four, on all three host-count tiers, averaged over the seeds below.
+# The 256 MB x 4-pass entry is OPTIONAL: good supporting evidence for your report, but it
+# costs hours of simulation time per config per seed. Uncomment it only if you have the budget.
 WORKLOADS=( \
+  ${SCRIPT_DIR:?}"/../../inputs/workload/microbenchmark_allreduce/32host_8ring_32mb_1pass/job" \
   ${SCRIPT_DIR:?}"/../../inputs/workload/microbenchmark_allreduce/32host_8ring_64mb_1pass/job" \
+  ${SCRIPT_DIR:?}"/../../inputs/workload/microbenchmark_allreduce/32host_8ring_128mb_1pass/job" \
+  ${SCRIPT_DIR:?}"/../../inputs/workload/microbenchmark_allreduce/32host_8ring_256mb_1pass/job" \
+  #   ${SCRIPT_DIR:?}"/../../inputs/workload/microbenchmark_allreduce/32host_8ring_256mb_4pass/job" \
 )
 
 WORKLOAD_NAMES=( \
+  "multiring_8ring_32mb_32nodes" \
   "multiring_8ring_64mb_32nodes" \
+  "multiring_8ring_128mb_32nodes" \
+  "multiring_8ring_256mb_1pass_32nodes" \
+  #   "multiring_8ring_256mb_4pass_32nodes" \
 )
 
 # The communicator-group file that partitions the 32 hosts into 8 independent rings.
@@ -68,8 +79,12 @@ RUNNING_LOG="${NS3_DIR:?}"/scratch/output/running_log.txt
 
 # Experiment seeds
 # For quick test, you can just use one seed, but for evaluation, please use multiple seeds
-# This quick placeholder experiment defaults to seed 1. Override it with SEEDS if needed.
-RANDOM_SEEDS=(${SEEDS:-1})
+# Every number in your report must be averaged over at least these 10 seeds.
+# Override from the environment to split the work across concurrent shells, e.g.
+#   for s in 1 2 3 4 5 6 7 8 9 10; do SEEDS="$s" ./this_script.sh -r & done
+# Each seed writes to its own report file and output directory, so this is safe.
+# A single seed (SEEDS=1) is fine while developing, but not for anything you report.
+RANDOM_SEEDS=(${SEEDS:-1 2 3 4 5 6 7 8 9 10})
 
 # Helper functions
 function setup_proto {
