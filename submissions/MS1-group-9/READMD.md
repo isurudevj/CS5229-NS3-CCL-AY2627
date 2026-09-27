@@ -17,7 +17,7 @@ Include all completion lines needed to support the reported value and show the o
 A concise excerpt is sufficient; do not replace the output with a manually rewritten summary or screenshot. Briefly state how you obtained the table values from this output.
 
 ## Q3. How does your ECMP implementation work?
-In 1–2 sentences, identify the source file/function that selects the next hop, describe the flow-identifying fields and selection method you use, and explain why packets of the same flow choose the same next hop when the candidate paths remain unchanged.
+Next-hop selection is handled in RouteInput() inside load-balancing-ecmp.cc, which calls a GetFlowHash() helper to compute a hash over the packet's 5-tuple (source IP, destination IP, source port, destination port, and protocol). The output port is then chosen as nextHops[hash % nextHops.size()]. Because the hash depends only on the header fields and not on any runtime state, packets belonging to the same flow always produce the same hash value and land on the same next-hop, provided the candidate path list hasn't changed.
 
 Q4. How did you check your implementation?
 In 1–2 sentences, briefly explain how you checked that packets of the same flow follow a consistent path and that different flows can use different paths, and summarize what you observed.
