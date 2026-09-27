@@ -27,7 +27,8 @@ SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r
 /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_placeholder_1/fct.txt
 
 
-Workload,32-host, eight-ring AllReduce; 64 MB per host | Placeholder LB completion time (ms) |	Your ECMP LB completion time (ms)	
+Workload | Placeholder LB completion time (ms) |	Your ECMP LB completion time (ms)
+32-host, eight-ring AllReduce; 64 MB per host | |
 
 
 Placeholder completion results
