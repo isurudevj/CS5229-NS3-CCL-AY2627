@@ -10,6 +10,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -24,8 +25,8 @@ namespace ns3 {
 /**
  * LB_MODE=1 interface.
  *
- * This intentionally uses the same first-port placeholder policy as modes 0
- * and 2. Students replace this implementation with ECMP in their solution.
+ * Uses stable per-flow hashing to select one of the currently installed
+ * equal-cost next hops for a destination.
  */
 class ECMPLoadBalancing : public Object {
   public:
@@ -46,6 +47,8 @@ class ECMPLoadBalancing : public Object {
     uint32_t GetQueueIndex(const CustomHeader& ch) const;
 
     SwitchSendCallback m_switchSendCallback;
+    // Diagnostic counter used to log only the first few packets of each flow.
+    std::unordered_map<std::string, uint32_t> m_flowLogCounts;
     bool m_isToR;
     uint32_t m_switchId;
 };
