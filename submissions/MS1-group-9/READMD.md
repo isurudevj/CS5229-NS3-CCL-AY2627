@@ -104,7 +104,7 @@ From the logs, it can be confirmed that the packets sharing the same source IP, 
 
 Q5. What will you investigate next?
 
-We can observe queueing in the switches even with ECMP, ideally we want to omit queueing. 
+We observed queue buildup at several switches even with ECMP enabled. Flow completion times are also running 2-3 times above the ideal baseline.
 
 ```shell
 tail -f /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/qlen.txt
@@ -121,8 +121,6 @@ time 145540000 34 j 1 1036 j 8 2072 j 11 11396 j 12 30044
 time 145540000 35 j 2 1036 j 6 9324 j 10 1036 j 11 16576 j 12 2072
 ```
 
-We want to improve the flow completion time for ECMP which is far from the ideal.
-
 
 ```shell
 root@202446041bb6:/app/astra-sim# tail -f /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/fct.txt
@@ -137,3 +135,7 @@ root@202446041bb6:/app/astra-sim# tail -f /app/astra-sim/extern/network_backend/
 0b001c01 0b000401 10003 100 16000000 124077375 45551023 13425600
 0b001801 0b000001 10003 100 16000000 123038966 47753003 13425600
 ```
+
+Our hypothesis is that the ring-based all-reduce traffic pattern generates flows that are highly correlated in their source-destination pairs, causing multiple flows to hash to the same next-hop and create hotspot links while other paths stay underutilised.
+
+To test this hypothesis, we plan to log per-port utilisation and the queue lengths to confirm whether load is skewed across paths, and then experiment to see if dynamically re-assigning short bursts of packets reduces queue depth and brings flow completion time closer to the ideal baseline.
