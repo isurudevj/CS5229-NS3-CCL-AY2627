@@ -13,7 +13,6 @@ Running ecmp
 cd /app/astra-sim
 SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r ecmp
 ```
-
 /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/qlen.txt
 /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/fct.txt
 
@@ -24,13 +23,58 @@ cd /app/astra-sim
 SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r placeholder
 ```
 
-Workload	Placeholder LB completion time (ms)	Your ECMP LB completion time (ms)
-32-host, eight-ring AllReduce; 64 MB per host		
-Below the table, paste the original simulator output reporting completion for each run into separate, clearly labelled Markdown code blocks.
+/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_placeholder_1/qlen.txt
+/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_placeholder_1/fct.txt
 
-Include all completion lines needed to support the reported value and show the original units.
 
-A concise excerpt is sufficient; do not replace the output with a manually rewritten summary or screenshot. Briefly state how you obtained the table values from this output.
+Workload | Placeholder LB completion time (ms) |	Your ECMP LB completion time (ms)
+32-host, eight-ring AllReduce; 64 MB per host | |
+
+
+Placeholder completion results
+
+```shell
+
+```
+
+ECMP completion results
+
+```shell
+sys[21] finished, 193338770 cycles
+sys[17] finished, 196954085 cycles
+sys[18] finished, 197593216 cycles
+sys[27] finished, 203490963 cycles
+sys[31] finished, 205777358 cycles
+sys[25] finished, 207308480 cycles
+sys[2] finished, 208203500 cycles
+sys[15] finished, 210133847 cycles
+sys[19] finished, 212109073 cycles
+sys[12] finished, 212742810 cycles
+sys[3] finished, 214913193 cycles
+sys[14] finished, 217517922 cycles
+sys[28] finished, 219916526 cycles
+sys[8] finished, 221280528 cycles
+sys[23] finished, 222619369 cycles
+sys[5] finished, 224854763 cycles
+sys[1] finished, 226148385 cycles
+sys[13] finished, 227249695 cycles
+sys[4] finished, 228009617 cycles
+sys[16] finished, 228225450 cycles
+sys[11] finished, 234762044 cycles
+sys[24] finished, 235216348 cycles
+sys[20] finished, 235483302 cycles
+sys[29] finished, 236034682 cycles
+sys[6] finished, 237133087 cycles
+sys[0] finished, 237175701 cycles
+sys[26] finished, 237559766 cycles
+sys[7] finished, 238521401 cycles
+sys[10] finished, 238998167 cycles
+sys[22] finished, 240188251 cycles
+sys[30] finished, 241217762 cycles
+sys[9] finished, 246962370 cycles
+```
+
+We took the maximum completion time across all hosts.
 
 ## Q3. How does your ECMP implementation work?
 
