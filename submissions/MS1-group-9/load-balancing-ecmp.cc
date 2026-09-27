@@ -12,9 +12,9 @@ namespace ns3 {
 
 namespace {
 
-uint32_t GetFlowHash(const CustomHeader& ch) {
-    uint16_t sourcePort = 0;
-    uint16_t destinationPort = 0;
+void GetFlowPorts(const CustomHeader& ch, uint16_t& sourcePort, uint16_t& destinationPort) {
+    sourcePort = 0;
+    destinationPort = 0;
 
     if (ch.l3Prot == 0x06) {  // TCP
         sourcePort = ch.tcp.sport;
@@ -31,26 +31,32 @@ uint32_t GetFlowHash(const CustomHeader& ch) {
     } else if (ch.l3Prot == 0xFE) {  // PFC
         sourcePort = ch.pfc.qIndex;
     }
+}
+
+std::string GetFlowKey(const CustomHeader& ch) {
+    uint16_t sourcePort;
+    uint16_t destinationPort;
+    GetFlowPorts(ch, sourcePort, destinationPort);
 
     // Serialize the five tuple explicitly so padding and host byte order cannot
     // make the hash vary across compilers or platforms.
-    uint8_t key[13] = {
-        static_cast<uint8_t>(ch.sip >> 24),
-        static_cast<uint8_t>(ch.sip >> 16),
-        static_cast<uint8_t>(ch.sip >> 8),
-        static_cast<uint8_t>(ch.sip),
-        static_cast<uint8_t>(ch.dip >> 24),
-        static_cast<uint8_t>(ch.dip >> 16),
-        static_cast<uint8_t>(ch.dip >> 8),
-        static_cast<uint8_t>(ch.dip),
-        static_cast<uint8_t>(sourcePort >> 8),
-        static_cast<uint8_t>(sourcePort),
-        static_cast<uint8_t>(destinationPort >> 8),
-        static_cast<uint8_t>(destinationPort),
-        static_cast<uint8_t>(ch.l3Prot),
+    char key[13] = {
+        static_cast<char>(ch.sip >> 24),
+        static_cast<char>(ch.sip >> 16),
+        static_cast<char>(ch.sip >> 8),
+        static_cast<char>(ch.sip),
+        static_cast<char>(ch.dip >> 24),
+        static_cast<char>(ch.dip >> 16),
+        static_cast<char>(ch.dip >> 8),
+        static_cast<char>(ch.dip),
+        static_cast<char>(sourcePort >> 8),
+        static_cast<char>(sourcePort),
+        static_cast<char>(destinationPort >> 8),
+        static_cast<char>(destinationPort),
+        static_cast<char>(ch.l3Prot),
     };
 
-    return Hash32(reinterpret_cast<const char*>(key), sizeof(key));
+    return std::string(key, sizeof(key));
 }
 
 }  // namespace
@@ -98,7 +104,33 @@ void ECMPLoadBalancing::RouteInput(Ptr<Packet> p, CustomHeader ch) {
     // Keep every packet in a flow on the same path while distributing distinct
     // flows over however many equal-cost next hops are currently installed.
     const auto& nextHops = entry->second;
-    const uint32_t outDev = nextHops[GetFlowHash(ch) % nextHops.size()];
+    const std::string flowKey = GetFlowKey(ch);
+    const uint32_t flowHash = Hash32(flowKey.data(), flowKey.size());
+    const uint32_t pathIndex = flowHash % nextHops.size();
+    const uint32_t outDev = nextHops[pathIndex];
+
+    // Print only the first three observations of each flow at each switch. The
+    // repeated lines make hash/path consistency visible without producing one
+    // log line per packet. This is diagnostic output for the debug build.
+    uint32_t& observationCount = m_flowLogCounts[flowKey];
+    if (observationCount < 3) {
+        uint16_t sourcePort;
+        uint16_t destinationPort;
+        GetFlowPorts(ch, sourcePort, destinationPort);
+        NS_LOG_DEBUG("ECMP_HASH switch=" << m_switchId
+                                          << " observation=" << (observationCount + 1)
+                                          << " sip=" << ch.sip
+                                          << " dip=" << ch.dip
+                                          << " sport=" << sourcePort
+                                          << " dport=" << destinationPort
+                                          << " protocol=" << ch.l3Prot
+                                          << " hash=" << flowHash
+                                          << " pathIndex=" << pathIndex
+                                          << " pathCount=" << nextHops.size()
+                                          << " outDev=" << outDev);
+    }
+    ++observationCount;
+
     DoSwitchSend(p, ch, outDev, GetQueueIndex(ch));
 }
 
