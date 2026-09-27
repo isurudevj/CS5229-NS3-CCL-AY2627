@@ -117,17 +117,17 @@ void ECMPLoadBalancing::RouteInput(Ptr<Packet> p, CustomHeader ch) {
         uint16_t sourcePort;
         uint16_t destinationPort;
         GetFlowPorts(ch, sourcePort, destinationPort);
-        NS_LOG_UNCOND("ECMP_HASH switch=" << m_switchId
-                                           << " observation=" << (observationCount + 1)
-                                           << " sip=" << ch.sip
-                                           << " dip=" << ch.dip
-                                           << " sport=" << sourcePort
-                                           << " dport=" << destinationPort
-                                           << " protocol=" << ch.l3Prot
-                                           << " hash=" << flowHash
-                                           << " pathIndex=" << pathIndex
-                                           << " pathCount=" << nextHops.size()
-                                           << " outDev=" << outDev);
+        NS_LOG_DEBUG("ECMP_HASH switch=" << m_switchId
+                                          << " observation=" << (observationCount + 1)
+                                          << " sip=" << ch.sip
+                                          << " dip=" << ch.dip
+                                          << " sport=" << sourcePort
+                                          << " dport=" << destinationPort
+                                          << " protocol=" << ch.l3Prot
+                                          << " hash=" << flowHash
+                                          << " pathIndex=" << pathIndex
+                                          << " pathCount=" << nextHops.size()
+                                          << " outDev=" << outDev);
     }
     ++observationCount;
 
