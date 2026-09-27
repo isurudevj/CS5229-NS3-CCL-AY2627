@@ -14,14 +14,9 @@ MEMORY="${SCRIPT_DIR:?}"/../../inputs/remote_memory/analytical/no_memory_expansi
 # rather than by the system/logical-topology configuration, which is why those stay fixed at a
 # single (unused) setting below.
 
-# The workload for this test.
-# The four uncommented sizes below (32/64/128/256 MB single pass) are the REQUIRED sweep -- you
-# must report results for all four, on all three host-count tiers, averaged over the seeds below.
-# The 256 MB x 4-pass entry is OPTIONAL: good supporting evidence for your report, but it
-# costs hours of simulation time per config per seed. Uncomment it only if you have the budget.
+# The specified workload for this script: 32 hosts, eight rings, 64 MB, one pass.
 WORKLOADS=( \
   ${SCRIPT_DIR:?}"/../../inputs/workload/microbenchmark_allreduce/32host_8ring_64mb_1pass/job" \
-  #   ${SCRIPT_DIR:?}"/../../inputs/workload/microbenchmark_allreduce/32host_8ring_256mb_4pass/job" \
 )
 
 WORKLOAD_NAMES=( \
@@ -58,14 +53,19 @@ LOGICAL_TOPO_NAMES=( \
   "8x4" \
 )
 
-# The network config for this test, do not change
-# If you want to test different network configs, please edit the "solution" config file
+# Required Milestone 1 combinations. By default -r runs both sequentially;
+# pass placeholder or ecmp as the second argument to run only one.
+PLACEHOLDER_NETWORK="${NS3_DIR:?}"/scratch/config/spine_leaf_32_host_10g/config_spine_leaf_4_4_32_placeholder.txt
+ECMP_NETWORK="${NS3_DIR:?}"/scratch/config/spine_leaf_32_host_10g/config_spine_leaf_4_4_32_ecmp_baseline.txt
+
 NETWORKS=( \
-  "${NS3_DIR:?}"/scratch/config/spine_leaf_32_host_10g/config_spine_leaf_4_4_32_placeholder.txt \
+  "$PLACEHOLDER_NETWORK" \
+  "$ECMP_NETWORK" \
 )
 
 NETWORK_CONFIG_NAMES=( \
   "4_4_32_placeholder" \
+  "4_4_32_ecmp_baseline" \
 )
 
 OUTPUT_DIR="${NS3_DIR:?}"/scratch/output/
@@ -92,6 +92,26 @@ function compile_ns3 {
     ./ns3 configure --build-profile=debug --enable-mpi --enable-python-bindings --enable-examples --enable-tests
     ./ns3 build AstraSimNetwork -j 8
     cd "$SCRIPT_DIR"
+}
+
+function select_networks {
+    case "${1:-both}" in
+      both)
+        ;;
+      placeholder)
+        NETWORKS=("$PLACEHOLDER_NETWORK")
+        NETWORK_CONFIG_NAMES=("4_4_32_placeholder")
+        ;;
+      ecmp|ecmp_baseline)
+        NETWORKS=("$ECMP_NETWORK")
+        NETWORK_CONFIG_NAMES=("4_4_32_ecmp_baseline")
+        ;;
+      *)
+        echo "Unknown load-balancing selection: $1" >&2
+        echo "Expected one of: both, placeholder, ecmp" >&2
+        return 2
+        ;;
+    esac
 }
 
 function run_experiment {
@@ -168,6 +188,8 @@ case "$1" in
     ;;
 
   -r|--run)
+    select_networks "${2:-both}" || exit $?
+
     # Go through all workload configurations
     for workload_index in "${!WORKLOADS[@]}"; do
       workload_cfg="${WORKLOADS[$workload_index]}"
@@ -215,9 +237,15 @@ case "$1" in
     cat <<EOF
 Usage: $0 [OPTIONS]
   -c | --compile   Set up and build NS-3 + AstraSim
-  -r | --run       Run experiments for each config group across all seeds
+  -r | --run [LB]  Run both LB modes, or select: both, placeholder, ecmp
   -h | --help      Show this message
   --clean          Clean the NS-3 build
+
+Examples:
+  $0 -r                         # placeholder then ECMP, all configured seeds
+  $0 -r placeholder             # placeholder only
+  $0 -r ecmp                    # ECMP only
+  SEEDS=1 $0 -r both            # quick one-seed comparison
 EOF
     ;;
 esac
