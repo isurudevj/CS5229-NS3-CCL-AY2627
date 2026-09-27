@@ -14,6 +14,9 @@ cd /app/astra-sim
 SEEDS="1 2 3 4 5 6 7 8 9 10" ./build_scripts/astra_ns3/microbenchmarks/run.sh -r ecmp
 ```
 
+/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/qlen.txt
+/app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8ring_64mb_32nodes_ring_2D_1_datasplit_1_parallel_8x4_4_4_32_ecmp_baseline_1/fct.txt
+
 Running placeholder
 
 ```shell
