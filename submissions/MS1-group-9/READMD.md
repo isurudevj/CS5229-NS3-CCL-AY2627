@@ -31,13 +31,45 @@ tail -f /app/astra-sim/extern/network_backend/ns-3/scratch/output/multiring_8rin
 
 
 | Workload | Placeholder LB completion time (ms) | Your ECMP LB completion time (ms) |
-|---|---:|---:|
-| 32-host, eight-ring AllReduce; 64 MB per host | 667.965 | 246.962 |
+|---|------------------------------------:|---:|
+| 32-host, eight-ring AllReduce; 64 MB per host |                             667.964 | 246.962 |
 
 
 Placeholder completion results
 
 ```shell
+sys[16] finished, 586298693 cycles
+sys[22] finished, 588426311 cycles
+sys[7] finished, 611631901 cycles
+sys[1] finished, 616945744 cycles
+sys[8] finished, 618921637 cycles
+sys[30] finished, 625824597 cycles
+sys[4] finished, 631745434 cycles
+sys[3] finished, 638614599 cycles
+sys[14] finished, 643311214 cycles
+sys[31] finished, 646009224 cycles
+sys[6] finished, 647601130 cycles
+sys[23] finished, 655501766 cycles
+sys[18] finished, 656235248 cycles
+sys[27] finished, 656423628 cycles
+sys[20] finished, 658722671 cycles
+sys[29] finished, 659231841 cycles
+sys[17] finished, 659611270 cycles
+sys[15] finished, 659740864 cycles
+sys[28] finished, 660105777 cycles
+sys[26] finished, 660520203 cycles
+sys[10] finished, 660863629 cycles
+sys[5] finished, 663593812 cycles
+sys[11] finished, 663902464 cycles
+sys[24] finished, 665035539 cycles
+sys[0] finished, 665048171 cycles
+sys[12] finished, 665516845 cycles
+sys[9] finished, 666487018 cycles
+sys[25] finished, 666570806 cycles
+sys[2] finished, 666582810 cycles
+sys[13] finished, 666598429 cycles
+sys[21] finished, 667223426 cycles
+sys[19] finished, 667964577 cycles
 
 ```
 
